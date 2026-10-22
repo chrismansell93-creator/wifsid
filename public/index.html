@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>wifsid — English AI chat</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <section id="gate" class="gate">
+    <div class="gate-card">
+      <div class="brand">
+        <span class="mark" aria-hidden="true"></span>
+        <span>wifsid</span>
+      </div>
+      <p class="eyebrow">English · Private · On this device</p>
+      <h1>An advanced AI in English.</h1>
+      <p class="lede">
+        Ask questions quickly and privately. Chats, memory, and your access code stay in this browser. Nothing personal is sent to this server except the message you choose to send.
+      </p>
+      <div id="gate-create">
+        <button id="generate" class="btn primary" type="button">Generate access code</button>
+        <button id="have-code" class="btn ghost" type="button">I already have a code</button>
+      </div>
+      <div id="gate-show" class="hidden">
+        <p class="code-label">Your 12-digit key. Save it. It is the only way back in on this browser.</p>
+        <p id="new-code" class="code"></p>
+        <button id="enter-new" class="btn primary" type="button">Enter chat</button>
+      </div>
+      <form id="gate-enter" class="hidden">
+        <label for="code-input">Access code</label>
+        <input id="code-input" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="12 digits" />
+        <p id="code-error" class="error"></p>
+        <button class="btn primary" type="submit">Unlock</button>
+      </form>
+    </div>
+  </section>
+
+  <div id="app" class="app hidden">
+    <aside class="side">
+      <div class="brand side-brand">
+        <span class="mark" aria-hidden="true"></span>
+        <span>wifsid</span>
+      </div>
+      <button id="new-chat" class="btn primary block" type="button">New chat</button>
+      <nav class="side-nav">
+        <button type="button" class="nav-btn active" data-panel="chat">Chat</button>
+        <button type="button" class="nav-btn" data-panel="agents">Agents</button>
+        <button type="button" class="nav-btn" data-panel="coding">IDE</button>
+        <button type="button" class="nav-btn" data-panel="images">Images</button>
+        <button type="button" class="nav-btn" data-panel="memory">Memory</button>
+        <button type="button" class="nav-btn" data-panel="key">API key</button>
+        <button type="button" class="nav-btn" data-panel="prompts">Prompts</button>
+      </nav>
+      <div class="history-head">History</div>
+      <div id="history" class="history"></div>
+      <button id="lock" class="btn ghost block" type="button">Lock</button>
+    </aside>
+
+    <main class="main">
+      <header class="top">
+        <div>
+          <h2 id="title">New chat</h2>
+          <p id="subtitle">Fast answers in English. Web search is optional.</p>
+        </div>
+        <div class="top-controls">
+          <label class="select-wrap">
+            <span>Agent</span>
+            <select id="agent"></select>
+          </label>
+          <label class="select-wrap">
+            <span>Model</span>
+            <select id="model">
+              <optgroup label="Grok">
+                <option value="fast">Grok 4.3 · fast</option>
+                <option value="g45">Grok 4.5</option>
+                <option value="g46">Grok 4.6</option>
+                <option value="deep">Grok 4.7</option>
+                <option value="code">Grok 4.7 · code</option>
+                <option value="build">Grok Build 0.1</option>
+                <option value="g420">Grok 4.20</option>
+                <option value="g420r">Grok 4.20 reasoning</option>
+                <option value="multi">Grok 4.20 multi-agent</option>
+              </optgroup>
+              <optgroup label="OpenAI">
+                <option value="oa-fast">GPT-6 Luna</option>
+                <option value="oa-sol">GPT-6 Sol</option>
+                <option value="oa">GPT-6.1 Sol</option>
+                <option value="oa-astra">GPT-6 Astra</option>
+              </optgroup>
+              <optgroup label="Qwen, Llama, and more">
+                <option value="or-qwen">Qwen 3.8 Flash</option>
+                <option value="or-qwen-max">Qwen 3.8 Max</option>
+                <option value="or-qwen-coder">Qwen3 Coder</option>
+                <option value="or-llama">Llama 4 Maverick</option>
+                <option value="or-llama-scout">Llama 4 Scout</option>
+                <option value="or-llama-70">Llama 3.3 70B</option>
+                <option value="or-gemma">Gemma 4 31B</option>
+                <option value="or-gemma-free">Gemma 4 26B free</option>
+                <option value="or-deepseek">DeepSeek V4.1 Flash</option>
+                <option value="or-deepseek-pro">DeepSeek V4 Pro</option>
+                <option value="or-mistral">Mistral Large 4</option>
+                <option value="or-devstral">Devstral 2</option>
+              </optgroup>
+            </select>
+          </label>
+          <label class="toggle">
+            <input id="web-search" type="checkbox" />
+            <span>Web search</span>
+          </label>
+          <button id="export-chat" class="btn ghost" type="button">Export</button>
+        </div>
+      </header>
+
+      <section id="panel-agents" class="panel hidden">
+        <div class="panel-copy">
+          <h3>Agents</h3>
+          <p>Pick who answers. The choice also sets a model and, for Researcher and Firmware, web search. You can change the model afterward.</p>
+          <div id="agent-list" class="agent-grid"></div>
+        </div>
+      </section>
+
+      <section id="panel-chat" class="panel">
+        <div id="thread" class="thread"></div>
+        <form id="composer" class="composer">
+          <textarea id="input" rows="2" placeholder="Ask anything in English"></textarea>
+          <button class="btn primary" type="submit">Send</button>
+        </form>
+      </section>
+
+      <section id="panel-coding" class="panel ide hidden">
+        <div class="ide-bar">
+          <input id="ide-name" placeholder="src/app.py" spellcheck="false" />
+          <button id="ide-new" class="btn ghost" type="button">New</button>
+          <button id="ide-save" class="btn ghost" type="button">Save</button>
+          <button id="ide-run" class="btn primary" type="button">Run</button>
+          <span id="ide-current" class="hint"></span>
+        </div>
+        <div class="ide-body">
+          <div id="ide-files" class="ide-files"></div>
+          <textarea id="ide-editor" spellcheck="false" wrap="off" placeholder="Select a file"></textarea>
+        </div>
+        <form id="ide-ask" class="ide-ask">
+          <input id="ide-prompt" placeholder="Ask the model to change this file" />
+          <button class="btn primary" type="submit">Apply</button>
+        </form>
+        <pre id="ide-out" class="ide-out"></pre>
+      </section>
+
+      <section id="panel-images" class="panel hidden">
+        <div class="panel-copy">
+          <h3>Image generation</h3>
+          <p>Describe a picture. Pick an image model. Requests follow the model’s normal content rules.</p>
+          <label for="image-model">Image model</label>
+          <select id="image-model">
+            <option value="grok-imagine-image">Grok Imagine</option>
+            <option value="grok-imagine-image-2.0">Grok Imagine 2.0</option>
+            <option value="grok-imagine-image-quality">Grok Imagine Quality</option>
+          </select>
+        </div>
+        <form id="image-form" class="composer">
+          <textarea id="image-input" rows="3" placeholder="A rainy neon street in London, cinematic, no text"></textarea>
+          <button class="btn primary" type="submit">Generate</button>
+        </form>
+      </section>
+
+      <section id="panel-key" class="panel hidden">
+        <div class="panel-copy">
+          <h3>API keys</h3>
+          <p>Keys stay in <code>.env</code> on this computer. They are not stored in the browser.</p>
+          <p id="key-status" class="hint">Checking…</p>
+          <label for="openai-key">OpenAI key</label>
+          <input id="openai-key" type="password" autocomplete="off" spellcheck="false" placeholder="sk-..." />
+          <div class="key-actions">
+            <button id="save-key" class="btn primary" type="button">Save OpenAI key</button>
+            <button id="clear-key" class="btn ghost" type="button">Remove</button>
+          </div>
+          <label for="router-key">OpenRouter key</label>
+          <p class="hint">Used by Qwen, Llama, Gemma, DeepSeek, Mistral, and Devstral.</p>
+          <input id="router-key" type="password" autocomplete="off" spellcheck="false" placeholder="sk-or-..." />
+          <div class="key-actions">
+            <button id="save-router" class="btn primary" type="button">Save OpenRouter key</button>
+            <button id="clear-router" class="btn ghost" type="button">Remove</button>
+          </div>
+          <p id="key-message" class="hint"></p>
+        </div>
+      </section>
+
+      <section id="panel-memory" class="panel hidden">
+        <div class="panel-copy">
+          <h3>Memory</h3>
+          <p>Saved only in this browser. When it is on, the next replies can use it as context.</p>
+          <label class="toggle">
+            <input id="memory-on" type="checkbox" />
+            <span>Use memory</span>
+          </label>
+          <textarea id="memory" rows="8" placeholder="Example: I prefer short answers. I work on Android firmware."></textarea>
+          <button id="save-memory" class="btn primary" type="button">Save memory</button>
+          <p id="memory-status" class="hint"></p>
+        </div>
+      </section>
+
+      <section id="panel-prompts" class="panel hidden">
+        <div class="panel-copy">
+          <h3>Prompt ideas</h3>
+          <div id="prompt-list" class="prompt-list"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="/app.js"></script>
+  <script src="/ide.js"></script>
+</body>
+</html>
